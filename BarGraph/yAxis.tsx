@@ -8,6 +8,7 @@ import {Surface, Group, Shape, Path, Text} from '@react-native-community/art';
 export default function yAxis({width, height, isNap}) {
   let yValues = ['14', '12', '10', '8', '6', '4', '2', '0'];
   let gridPoints = generateGridPoints(yValues.length);
+  // console.log(yValues.length);
 
   return (
     <Surface style={styles.yAxis} width={width} height={height}>
@@ -40,7 +41,7 @@ const generateGridPoints = amount => {
   let points = [];
   Array(amount)
     .fill()
-    .forEach((i, index) => {
+    .forEach((element, index) => {
       let pos = (100 / amount) * index;
       points.push(pos);
     });
