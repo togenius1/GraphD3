@@ -6,5 +6,6 @@
 
     /* Completeness */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-  }
+  },
+  "include": ["node_modules/react-native-redash/lib/typescript/v1/index.d.ts"]
 }
