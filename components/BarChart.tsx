@@ -1,20 +1,44 @@
-import React, {PureComponent} from 'react';
+import React, {useEffect, useState} from 'react';
+import {Dimensions} from 'react-native';
 import {Svg, G, Line, Rect, Text} from 'react-native-svg';
 import * as d3 from 'd3';
 
-const GRAPH_MARGIN = 20;
-const GRAPH_BAR_WIDTH = 5;
+const GRAPH_MARGIN = 30;
+const GRAPH_BAR_WIDTH = 15;
+const window = Dimensions.get('window');
+// const screen = Dimensions.get('screen');
+
 const colors = {
-  axis: '#E4E4E4',
+  axis: '#0a0a0a',
   bars: '#15AD13',
 };
 
-type Props = {};
+type Props = {
+  data: [];
+  round: number;
+  unit: string;
+};
 
 const BarChart = ({data, round, unit}: Props) => {
+  // const [dimensions, setDimensions] = useState({window, screen});
+  const [dimensions, setDimensions] = useState({window});
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener(
+      'change',
+      // ({window, screen}) => {
+      ({window}) => {
+        // setDimensions({window, screen});
+        setDimensions({window});
+      },
+    );
+    return () => subscription?.remove();
+  });
+
+  // console.log(dimensions.window.width);
   // Dimensions
-  const SVGHeight = 150;
-  const SVGWidth = 300;
+  const SVGHeight = 220;
+  const SVGWidth = dimensions.window.width;
   const graphHeight = SVGHeight - 2 * GRAPH_MARGIN;
   const graphWidth = SVGWidth - 2 * GRAPH_MARGIN;
 
@@ -35,14 +59,14 @@ const BarChart = ({data, round, unit}: Props) => {
 
   return (
     <Svg width={SVGWidth} height={SVGHeight}>
-      <G y={graphHeight + GRAPH_MARGIN}>
+      <G y={graphHeight + GRAPH_MARGIN} x={25}>
         {/* Top value label */}
         <Text
           x={graphWidth}
           textAnchor="end"
           y={y(topValue) * -1 - 5}
           fontSize={12}
-          fill="black"
+          fill="#2a2828"
           fillOpacity={0.4}>
           {topValue + ' ' + unit}
         </Text>
@@ -96,9 +120,10 @@ const BarChart = ({data, round, unit}: Props) => {
         {data.map(item => (
           <Text
             key={'label' + item.label}
-            fontSize="18"
+            fontSize="10"
+            fill="#2a2828"
             x={x(item.label)}
-            y="10"
+            y="15"
             textAnchor="middle">
             {item.label}
           </Text>
