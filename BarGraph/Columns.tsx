@@ -40,7 +40,7 @@ function ConstructShape({
   config: {index, width, data, height, color, lineWidth, lineHeight, type},
 }) {
   // set X
-  let x = this._createX(width);
+  let x = _createX(width);
   x.domain(
     data.map(d => {
       return d.column;
@@ -49,7 +49,7 @@ function ConstructShape({
   let xPos = x(data[index].column);
 
   // set Y
-  let y = this._createY(height);
+  let y = _createY(height);
   let barHeight = y(data[index].duration);
 
   // set starting position from x position
@@ -69,10 +69,10 @@ function ConstructShape({
   return <Shape d={d} fill={color} />;
 }
 
-_createX = width => {
+const _createX = width => {
   return scaleBand().rangeRound([20, width - 75]);
 };
 
-_createY = height => {
+const _createY = height => {
   return scaleLinear().domain([0, 16]).range([0, height]);
 };
