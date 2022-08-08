@@ -1,112 +1,37 @@
 import React from 'react';
-import {StyleSheet, Text, View, Dimensions, StatusBar} from 'react-native';
 
-import LinearGradient from 'react-native-linear-gradient';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faBars} from '@fortawesome/free-solid-svg-icons';
+import {StyleSheet, View} from 'react-native';
 
-import BarGraph from './BarGraph';
+import BarChart from './components/BarChart';
 
-export default function App() {
-  const color = '#FFC77D';
-
+const App = (props: Props) => {
   const data = [
-    {duration: 4, column: 0},
-    {duration: 7, column: 1},
-    {duration: 6, column: 2},
-    {duration: 7, column: 3},
-    {duration: 8, column: 4},
-    {duration: 5, column: 5},
-    {duration: 8, column: 6},
+    {label: 'Jan', value: 500},
+    {label: 'Feb', value: 312},
+    {label: 'Mar', value: 424},
+    {label: 'Apr', value: 745},
+    {label: 'May', value: 89},
+    {label: 'Jun', value: 434},
+    {label: 'Jul', value: 650},
+    {label: 'Aug', value: 980},
+    {label: 'Sep', value: 123},
+    {label: 'Oct', value: 186},
+    {label: 'Nov', value: 689},
+    {label: 'Dec', value: 643},
   ];
-
   return (
-    <LinearGradient
-      colors={['#282828', '#121212']}
-      style={styles.linearGradient}>
-      <StatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor="#121212"
-        translucent={true}
-        networkActivityIndicatorVisible={true}
-      />
-
-      <View style={styles.topbar}>
-        <View style={styles.topbar_inner}>
-          <FontAwesomeIcon icon={faBars} style={styles.topbar_hamburger} />
-          <View style={styles.topbar_avatar}></View>
-        </View>
-      </View>
-
-      <View style={styles.spaceBetween}>
-        <View style={styles.header}>
-          <Text style={styles.header_title}>D3 + ART Bar Graph</Text>
-          <Text style={styles.header_sub}>
-            Made by you bc you're a bad ass.
-          </Text>
-        </View>
-
-        <BarGraph color={color} data={data} />
-      </View>
-
-      <View style={styles.footer}></View>
-    </LinearGradient>
+    <View style={styles.container}>
+      <BarChart data={data} round={100} unit="€" />
+    </View>
   );
-}
+};
+
+export default App;
 
 const styles = StyleSheet.create({
-  linearGradient: {
+  container: {
     flex: 1,
-    height: Math.round(Dimensions.get('window').height),
-    justifyContent: 'space-between',
-  },
-  topbar: {
-    backgroundColor: 'rgba(18,18,18,0.75)',
-    bottom: 2,
-    height: 68,
-  },
-  topbar_inner: {
-    marginTop: 25,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#121212',
-  },
-  topbar_hamburger: {
-    padding: 10,
-    color: '#fff',
-  },
-  topbar_avatar: {
-    borderRadius: 100,
-    width: 25,
-    height: 25,
-    borderColor: '#fff',
-    borderWidth: 1,
-  },
-  footer: {
-    height: 70,
-    backgroundColor: '#232323',
-  },
-  header: {
-    paddingTop: 20,
-    paddingLeft: 25,
-  },
-  header_title: {
-    color: '#fff',
-    fontSize: 34,
-    textTransform: 'capitalize',
-  },
-  header_sub: {
-    color: '#fff',
-    fontSize: 16,
-    fontStyle: 'italic',
-  },
-  spaceBetween: {
-    flex: 1,
-    justifyContent: 'space-between',
   },
 });
