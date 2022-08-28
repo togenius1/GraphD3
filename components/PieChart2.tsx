@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {PanGestureHandler, State} from 'react-native-gesture-handler';
 import Svg, {Path, G, Text as SvgText, Polyline, Line} from 'react-native-svg';
 import * as d3Shape from 'd3-shape';
@@ -9,10 +9,9 @@ import {max, min, extent, sum} from 'd3-array';
 type Props = {};
 
 const {width, height} = Dimensions.get('window');
-const wheelSize = width * 0.3;
+const radius = width * 0.15;
 
 const data = [
-  {number: 60, name: 'Locke'},
   {number: 80, name: 'Reyes'},
   {number: 90, name: 'Ford'},
   {number: 110, name: 'Jarrah'},
@@ -32,60 +31,81 @@ const makePie = () => {
   const minValue = min(filteredData);
   const gradientScale = scaleLinear()
     .domain([minValue, maxValue])
-    .range(['#a5ebab', '#b90404']);
+    .range(['#dff6a2', '#b90404']);
 
   return arcs.map((arc, index) => {
     const instance = d3Shape
       .arc()
       // .padAngle(0.01)
-      .innerRadius(width / 2)
-      .outerRadius(0);
+      .innerRadius(0)
+      .outerRadius(radius);
+
+    const outerArcForLabelsPosition = d3Shape
+      .arc()
+      .innerRadius(radius * 0.95)
+      .outerRadius(radius * 0.95);
 
     return {
       path: instance(arc),
       color: gradientScale(arc.value),
       value: data,
       centroid: instance.centroid(arc),
+      radius: radius,
+      startAngle: arc.startAngle,
+      endAngle: arc.endAngle,
+      outerArcForLabelsPosition: outerArcForLabelsPosition,
     };
   });
 };
 
 const PieChart2 = (props: Props) => {
+  const [labelPos, setLabelPos] = useState([]);
+
   const _piePaths = makePie();
   // useEffect(() => {
   //   _piePaths;
-  //   console.log(_piePaths);
+
   // }, []);
 
   const _renderSvgPie = () => {
     //
     return (
       <View style={styles.container}>
-        <Svg
-          width={wheelSize}
-          height={wheelSize}
-          viewBox={`0 0 ${width} ${width}`}>
+        <Svg width={width} height={height} viewBox={`0 0 ${width} ${width}`}>
           <G y={width / 2} x={width / 2}>
             {_piePaths.map((arc, i) => {
               const [x, y] = arc.centroid;
-              const number = arc.value[i].number.toString();
+              const number = arc.value[i].number;
               const label = arc.value[i].name;
+
+              const posA = arc.outerArcForLabelsPosition.centroid(arc);
+              const posB = arc.outerArcForLabelsPosition.centroid(arc);
+              const posC = arc.outerArcForLabelsPosition.centroid(arc);
+              const midAngle =
+                arc.startAngle + (arc.endAngle - arc.startAngle) / 2;
+
+              posB[0] = arc.radius * 0.65 * (midAngle < Math.PI ? 1 : -1);
+              const cx = posC[0] * 2;
+              const cy = posC[1] * 2;
+
               return (
                 <G key={`arc-${i}`} onPress={() => alert(number)}>
                   <Path d={arc.path} fill={arc.color} />
                   <SvgText
                     x={x}
                     y={y}
-                    fill="white"
+                    fill="#1c1b1b"
                     textAnchor="middle"
-                    fontSize={26}>
+                    fontSize={12}>
                     {number}
                   </SvgText>
+
                   <Polyline
-                    points={`${0},${0} ${x},${y}`}
+                    points={`${posA} ${posB} ${cx},${cy}`}
+                    // points={`${posB} ${cx},${cy}`}
                     fill="none"
-                    stroke="black"
-                    strokeWidth="3"
+                    stroke={arc.color}
+                    strokeWidth="1"
                   />
                 </G>
               );
@@ -95,29 +115,39 @@ const PieChart2 = (props: Props) => {
         {_piePaths.map((arc, i) => {
           const [x, y] = arc.centroid;
           const label = arc.value[i].name;
-          const number = arc.value[i].number; // console.log(y);
+          const number = arc.value[i].number;
+          const posA = arc.centroid;
+          const posB = arc.outerArcForLabelsPosition.centroid(arc);
+          const posC = arc.outerArcForLabelsPosition.centroid(arc);
+          // const midAngle = arc.startAngle + (arc.endAngle - arc.startAngle) / 2;
+
+          // posC[0] = arc.radius * 2.2 * (midAngle < Math.PI ? 1 : -1);
+
+          const cx = posC[0] * 2.25;
+          const cy = posC[1] * 2.25;
 
           return (
             <View
+              key={`labelBox-${i}`}
               style={{
                 width: 80,
                 height: 35,
-                backgroundColor: '#fcacac',
-                opacity: 0.75,
+                // backgroundColor: '#d5d5d5',
+                // opacity: 0.75,
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'absolute',
                 transform: [
                   {
-                    translateX: x * 1.25,
+                    translateX: cx,
                   },
                   {
-                    translateY: y * 1.25,
+                    translateY: cy,
                   },
                 ],
               }}>
-              <Text style={{fontSize: 12, color: 'blue'}}>{label}</Text>
-              <Text style={{fontSize: 12, color: 'blue'}}>{number}</Text>
+              <Text style={{fontSize: 12, color: '#000000'}}>{label}</Text>
+              <Text style={{fontSize: 12, color: '#000000'}}>{number}</Text>
             </View>
           );
         })}
